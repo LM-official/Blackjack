@@ -1,0 +1,28 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Files removed by ./cleanup.sh (and ./cleanup.sh --deep). Kept out of git.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# --- compiled output (cleanup --deep) -------------------------------------
+bin/
+
+# --- build / run scratch --------------------------------------------------
+sources.txt
+.sources.tmp
+*.log
+*.out
+*.err
+
+# --- test / verify scratch (cleanup.sh) -----------------------------------
+jbj_*
+accounts.bak
+CurSize.*
+PathChk.*
+Res.*
+
+# --- macOS Finder artifacts (cleanup.sh) ----------------------------------
+.AppleDouble
+.LSOverride
+._*
+
+# Note: cleanup --deep also wipes ~/.JBlackJack (the live accounts file outside
+# the repo) — it lives in $HOME, so it can't be covered by .gitignore.
