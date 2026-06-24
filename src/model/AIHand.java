@@ -32,7 +32,7 @@ public class AIHand extends Hand{
 	 * Sets the minimum points the {@link AIHand} aims to reach.
 	 */
 	public AIHand() {
-		standPoints = new Random().nextInt(MAXIMUM_POINTS - MINIMUM_POINTS + 1) + MINIMUM_POINTS; // numeri casuali da 12 a 21.
+		standPoints = new Random().nextInt(MAXIMUM_POINTS - MINIMUM_POINTS + 1) + MINIMUM_POINTS; // random number from 12 to 21.
 	}
 	
 	

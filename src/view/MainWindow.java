@@ -59,11 +59,11 @@ public class MainWindow extends JFrame {
 	 */
 	private static Cursor createCursor(String path, String name) {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		Dimension dimensione = toolkit.getBestCursorSize(32, 32); // dimensione cursore supportata.
-		Image originale = Resources.icon(path).getImage();
+		Dimension size = toolkit.getBestCursorSize(32, 32); // cursor size supported by the OS.
+		Image original = Resources.icon(path).getImage();
 		// new ImageIcon(...) forces synchronous loading of the resized image.
-		Image scalata = new ImageIcon(originale.getScaledInstance(dimensione.width, dimensione.height, Image.SCALE_SMOOTH)).getImage();
-		return toolkit.createCustomCursor(scalata, new Point(0, 0), name); // icon, pixel puntatore.
+		Image scaled = new ImageIcon(original.getScaledInstance(size.width, size.height, Image.SCALE_SMOOTH)).getImage();
+		return toolkit.createCustomCursor(scaled, new Point(0, 0), name); // image, hotspot pixel.
 	}
 	
 	/**
@@ -94,11 +94,11 @@ public class MainWindow extends JFrame {
 		setSize(SIZE.width, SIZE.height);
 		setResizable(false);
 		setUndecorated(true); // remove the title bar.
-		getContentPane().setBackground(BACKGROUND_COLOR); // sfondo.
+		getContentPane().setBackground(BACKGROUND_COLOR); // background.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // exit the program on close.
 		setCursor(CURSOR);
 		
-		home = new Home("user");
+		home = new Home(Home.GUEST_AVATAR);
 		add(home);
 		setVisible(true);
 	}

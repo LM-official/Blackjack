@@ -33,21 +33,23 @@ public class AccountAvatarButton extends JButton{
     
  /**
 	 * Constructor of the {@link AccountAvatarButton}.
-	 * 
+	 *
 	 * @param avatar The number matching the avatar.
 	 * @param nickname The user's nickname.
+	 * @param password The user's password.
 	 */
-	public AccountAvatarButton(int avatar, String nickname) {
+	public AccountAvatarButton(int avatar, String nickname, String password) {
         setBorder(new EmptyBorder(0, 0, 0, 0));
         setBackground(Account.BACKGROUND_COLOR);
         ImageIcon avatarIcon = new ImageIcon(Resources.icon("/img/avatar/"+avatar+".png").getImage().getScaledInstance(AVATAR_SIZE.width, AVATAR_SIZE.height, Image.SCALE_SMOOTH));
 		setIcon(avatarIcon);
-		
+
 		addActionListener(new ActionListener() { // on click.
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try (FileWriter file = new FileWriter(Account.FILE_PATH, true)){ // true to append to the file.
-					file.write(avatar + ":0:0:0:0:1" + System.lineSeparator());
+					// full record written in one shot: nickname:password:avatar:played:won:lost:xp:level
+					file.write(nickname + ":" + password + ":" + avatar + ":0:0:0:0:1" + System.lineSeparator());
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}

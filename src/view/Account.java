@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -82,7 +81,7 @@ public class Account extends JPanel{
  * The project's {@code src/accounts.txt} is used, located relative to the
  * directory the compiled classes are loaded from (…/bin -> …/src/accounts.txt),
  * so the game can be launched from any working directory and still updates the
- * project file.
+ * project file (no data is written outside the project directory).
  */
     static final String FILE_PATH = initAccountFile();
 
@@ -217,7 +216,17 @@ public class Account extends JPanel{
 	 * {@link JLabel} shown when the password does not meet the standard rules.
 	 */
 	private JLabel invalidPassword;
-	
+	/**
+	 * {@link JLabel} shown when the nickname contains the reserved field separator.
+	 */
+	private JLabel invalidNickname;
+
+	/**
+	 * The field {@link String} separator used in the accounts file. It must not
+	 * appear inside a nickname or password, otherwise it would corrupt the record.
+	 */
+	private static final String SEPARATOR = ":";
+
 
 	/**
 	 * Constructor of the {@link Account}.
@@ -336,20 +345,17 @@ public class Account extends JPanel{
 			signup.addActionListener(new ActionListener() { // on click.
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (dataEntered() && !isNicknameRegistered() && isPasswordValid()) {
+					if (dataEntered() && isNicknameValid() && !isNicknameRegistered() && isPasswordValid()) {
 						AudioManager.getInstance().play("/sounds/click.wav");
-						try (FileWriter file = new FileWriter(FILE_PATH, true)){ // true to append to the file.
-							file.write(nicknameInput.getText() + ":" + new String(passwordInput.getPassword()) + ":");
-							setVisible(false);
-							MainWindow window = (MainWindow) SwingUtilities.getWindowAncestor(Account.this);
-							JPanel mainPanel = (JPanel) window.getContentPane();
-							JLayeredPane mainPanel2 = (JLayeredPane) mainPanel.getParent();
-							mainPanel2.add(new AccountAvatar(nicknameInput.getText()), Integer.valueOf(2));
-							mainPanel2.revalidate(); // notify the layout manager that the structure changed.
-							mainPanel2.repaint(); // repaint.
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
+						// The account is written atomically (as a single complete line) only once
+						// the avatar is chosen, so an abandoned registration leaves no half-row.
+						setVisible(false);
+						MainWindow window = (MainWindow) SwingUtilities.getWindowAncestor(Account.this);
+						JPanel mainPanel = (JPanel) window.getContentPane();
+						JLayeredPane mainPanel2 = (JLayeredPane) mainPanel.getParent();
+						mainPanel2.add(new AccountAvatar(nicknameInput.getText(), new String(passwordInput.getPassword())), Integer.valueOf(2));
+						mainPanel2.revalidate(); // notify the layout manager that the structure changed.
+						mainPanel2.repaint(); // repaint.
 					}
 				}
 			});
@@ -378,12 +384,19 @@ public class Account extends JPanel{
 		alreadyRegistered.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		add(alreadyRegistered);
 		
-		// message shown when the account being registered already exists.
-        invalidPassword = new JLabel("* password: > 8 characters, uppercase, lowercase, number, special character");
+		// message shown when the password does not meet the standard rules.
+        invalidPassword = new JLabel("* password: > 8 characters, uppercase, lowercase, number, special character (not '" + SEPARATOR + "')");
         invalidPassword.setForeground(BACKGROUND_COLOR); // text color.
         invalidPassword.setFont(ERROR_FONT);
         invalidPassword.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		add(invalidPassword);
+
+		// message shown when the nickname contains the reserved separator.
+        invalidNickname = new JLabel("* nickname cannot contain '" + SEPARATOR + "'");
+        invalidNickname.setForeground(BACKGROUND_COLOR); // text color.
+        invalidNickname.setFont(ERROR_FONT);
+        invalidNickname.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		add(invalidNickname);
 	}
 	
 	
@@ -466,15 +479,40 @@ public class Account extends JPanel{
 	}
 	
 	/**
+	 * Checks whether the nickname is free of the reserved field separator,
+	 * which would otherwise corrupt the account record on disk.
+	 *
+	 * @return true if the nickname is acceptable,
+	 * false otherwise.
+	 */
+	private boolean isNicknameValid() {
+		if (nicknameInput.getText().contains(SEPARATOR)) {
+			invalidNickname.setForeground(Color.RED);
+			nicknameEmpty.setForeground(Color.RED);
+			AudioManager.getInstance().play("/sounds/no.wav");
+			return false;
+		}
+		invalidNickname.setForeground(BACKGROUND_COLOR);
+		return true;
+	}
+
+	/**
 	 * Checks whether the password meets the standard rules:
 	 * minimum length 8 characters, at least one uppercase and one lowercase, at least one number and one special character.
-	 * 
+	 * The reserved field separator is not allowed (it would corrupt the record).
+	 *
 	 * @return true if the password is acceptable,
 	 * false otherwise.
 	 */
 	private boolean isPasswordValid() {
 		char[] password = passwordInput.getPassword();
-		
+
+		if (new String(password).contains(SEPARATOR)) { // the separator would corrupt the record.
+			invalidPassword.setForeground(Color.RED);
+			passwordEmpty.setForeground(Color.RED);
+			return false;
+		}
+
 		if (password.length<8) {
 			invalidPassword.setForeground(Color.RED);
 			passwordEmpty.setForeground(Color.RED);

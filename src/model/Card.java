@@ -149,21 +149,27 @@ public class Card {
 		this.value = value;
 		this.suit = suit;
 		faceUp = true;
-		
-		String path = "/img/cards/"; // base path shared by all cards.
-		path += value.getValueString()+suit.getSuit()+".png"; // append the specific card's tokens.
-		frontIcon = Resources.icon(path); // front.
+
+		frontIcon = Resources.icon("/img/cards/" + value.getValueString() + suit.getSuit() + ".png"); // e.g. /img/cards/AceSpades.png
 		backIcon = Resources.icon("/img/cards/Back.png"); // the back is shared by all cards.
 	}
 	
 	
 	/**
 	 * Returns the {@link int} {@link CardValue} of the {@link Card}.
-	 * 
+	 *
 	 * @return The {@link int} {@link CardValue} of the {@link Card}.
 	 */
 	public int getValue() {
 		return value.getValue();
+	}
+	/**
+	 * Returns whether the {@link Card} is an ace.
+	 *
+	 * @return true if the {@link Card} is an ace, false otherwise.
+	 */
+	public boolean isAce() {
+		return value == CardValue.ACE;
 	}
 	/**
 	 * Returns the {@link String} representation of the {@link CardValue} of the {@link Card}.
@@ -192,16 +198,14 @@ public class Card {
 		return faceUp;
 	}
 	/**
-	 * Returns l'{@link ImageIcon} of the {@link Card}.
+	 * Returns the {@link ImageIcon} of the {@link Card}.
 	 * If it is face up it returns the front,
 	 * if it is face down it returns the back.
-	 * 
+	 *
 	 * @return The {@link ImageIcon} of the {@link Card}.
 	 */
 	public ImageIcon getIcon() {
-		if (faceUp)
-			return frontIcon;
-		return backIcon;
+		return faceUp ? frontIcon : backIcon;
 	}
 	
 	

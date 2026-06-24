@@ -92,10 +92,11 @@ public class AccountAvatar extends JPanel{
 	
 	/**
 	 * Constructor of the {@link AccountAvatar}.
-	 * 
+	 *
 	 * @param nickname The user's nickname.
+	 * @param password The user's password, written together with the chosen avatar.
 	 */
-	public AccountAvatar(String nickname) {
+	public AccountAvatar(String nickname, String password) {
 		setSize(Account.SIZE);
 		setLocation(Account.OPENING_POSITION); // opening position.
 		setBorder(Account.BORDER);
@@ -119,37 +120,37 @@ public class AccountAvatar extends JPanel{
 			title.add(titleText, BorderLayout.CENTER);
 		add(title);
 		
-		JPanel avatar = new JPanel(new GridLayout(3,5)); // 3 rows 5 colonne
+		JPanel avatar = new JPanel(new GridLayout(3,5)); // 3 rows, 5 columns
 		avatar.setBackground(null);
-			avatar1 = new AccountAvatarButton(1, nickname);
+			avatar1 = new AccountAvatarButton(1, nickname, password);
 			avatar.add(avatar1);
-			avatar2 = new AccountAvatarButton(2, nickname);
+			avatar2 = new AccountAvatarButton(2, nickname, password);
 			avatar.add(avatar2);
-			avatar3 = new AccountAvatarButton(3, nickname);
+			avatar3 = new AccountAvatarButton(3, nickname, password);
 			avatar.add(avatar3);
-			avatar4 = new AccountAvatarButton(4, nickname);
+			avatar4 = new AccountAvatarButton(4, nickname, password);
 			avatar.add(avatar4);
-			avatar5 = new AccountAvatarButton(5,nickname);
+			avatar5 = new AccountAvatarButton(5, nickname, password);
 			avatar.add(avatar5);
-			avatar6 = new AccountAvatarButton(6, nickname);
+			avatar6 = new AccountAvatarButton(6, nickname, password);
 			avatar.add(avatar6);
-			avatar7 = new AccountAvatarButton(7, nickname);
+			avatar7 = new AccountAvatarButton(7, nickname, password);
 			avatar.add(avatar7);
-			avatar8 = new AccountAvatarButton(8, nickname);
+			avatar8 = new AccountAvatarButton(8, nickname, password);
 			avatar.add(avatar8);
-			avatar9 = new AccountAvatarButton(9, nickname);
+			avatar9 = new AccountAvatarButton(9, nickname, password);
 			avatar.add(avatar9);
-			avatar10 = new AccountAvatarButton(10, nickname);
+			avatar10 = new AccountAvatarButton(10, nickname, password);
 			avatar.add(avatar10);
-			avatar11 = new AccountAvatarButton(11, nickname);
+			avatar11 = new AccountAvatarButton(11, nickname, password);
 			avatar.add(avatar11);
-			avatar12 = new AccountAvatarButton(12, nickname);
+			avatar12 = new AccountAvatarButton(12, nickname, password);
 			avatar.add(avatar12);
-			avatar13 = new AccountAvatarButton(13, nickname);
+			avatar13 = new AccountAvatarButton(13, nickname, password);
 			avatar.add(avatar13);
-			avatar14 = new AccountAvatarButton(14, nickname);
+			avatar14 = new AccountAvatarButton(14, nickname, password);
 			avatar.add(avatar14);
-			avatar15 = new AccountAvatarButton(15, nickname);
+			avatar15 = new AccountAvatarButton(15, nickname, password);
 			avatar.add(avatar15);
 		add(avatar);
 		

@@ -8,7 +8,8 @@ as you win, and watch the cards being dealt one at a time in a fully animated ta
 
 ![Language](https://img.shields.io/badge/Language-Java%2017-blue?style=flat-square)
 ![GUI](https://img.shields.io/badge/GUI-Swing-orange?style=flat-square)
-![Build](https://img.shields.io/badge/Build-javac%20%2F%20Eclipse-informational?style=flat-square)
+![Build](https://img.shields.io/badge/Build-javac%20%2B%20jar%20(JDK%20only)-informational?style=flat-square)
+![Portable](https://img.shields.io/badge/Runs%20on-Windows%20%7C%20macOS%20%7C%20Linux-success?style=flat-square)
 ![Pattern](https://img.shields.io/badge/Pattern-MVC-4c1?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
@@ -30,8 +31,8 @@ house:
 - **👁️ Live MVC updates** — the table view observes each hand through an Observer/Observable link, so every draw is reflected on screen immediately.
 
 > 🗣️ The **dealt cards and results** are shown live in the window, while account
-> data is persisted to `JBlackJack/src/accounts.txt`, so the game can be followed
-> on screen and your progress survives a restart.
+> data is persisted to the project's `src/accounts.txt`, so the game can be
+> followed on screen and your progress survives a restart.
 
 ---
 
@@ -41,8 +42,8 @@ house:
 .
 ├── README.md
 ├── LICENSE
-├── build.sh                          # compile the project
-├── cleanup.sh                        # delete the temp files
+├── tools/
+│   └── Clean.java                    # portable cleanup: java tools/Clean.java
 ├── MDP_progetto_2023_2024.pdf        # the project assignment
 ├── MercuriRelazioneProgetto.pdf      # project report
 ├── MercuriDiagrammaDelleClassi.pdf   # UML class diagram
@@ -65,44 +66,55 @@ single match.
 
 ## ⚙️ Building
 
-There is no Maven/Gradle — it's a plain Java 17 module. Any JDK ≥ 17 works
-(use `--release 17` if yours is newer).
-
-| Command | Action |
-| :------ | :----- |
-| `./build.sh` | 🔨 Compile **and** stage resources into `bin/` (use this) |
-| `java -cp bin view.JBlackJack` | ▶️ Run the game |
-| Import into **Eclipse** → *Run* | 🖥️ Or just open it as an existing Java project |
-| `./cleanup.sh` | 🧹 Remove temp scratch files (`--deep` also clears `bin/` and `~/.JBlackJack`) |
-
-One-liner build & run:
+There is **no Maven/Gradle and no shell script** — just a plain Java 17 project
+built with the tools that ship in every JDK (`javac` + `jar`). The same two
+commands work identically on **Windows, macOS and Linux** (any JDK ≥ 17; forward
+slashes are fine on Windows too):
 
 ```sh
-./build.sh && java -cp bin view.JBlackJack
+# 1) compile the whole project (transitively, from the entry point)
+javac --release 17 -d build/classes -sourcepath src src/view/JBlackJack.java src/module-info.java
+
+# 2) package a self-contained, runnable jar (classes + images + sounds + accounts)
+jar --create --file JBlackJack.jar --main-class view.JBlackJack -C build/classes . -C src img -C src sounds -C src accounts.txt
 ```
 
-> ⚠️ **Why a build script?** Plain `javac -d bin` only writes `.class` files — it
-> does **not** copy the image/sound assets, so `java -cp bin ...` would then crash
-> with a `NullPointerException` on a missing resource. `./build.sh` (and Eclipse)
-> copy `src/img`, `src/sounds` and `accounts.txt` into `bin/` for you.
+That produces a single **portable `JBlackJack.jar`** that runs on any device with
+a Java runtime — no project checkout, no classpath juggling, no resource staging:
+
+```sh
+java -jar JBlackJack.jar
+```
+
+> 💡 **Why a jar?** Bundling the `.class` files **and** the `img/`, `sounds/` and
+> `accounts.txt` resources into one archive means every asset is always on the
+> classpath, so the game runs from **any** working directory on **any** OS.
+> Account data is read from and written to the project's `src/accounts.txt`
+> (see [Accounts file](#-accounts-file)) — the game never writes outside the
+> project directory.
 >
-> 💡 **No-copy alternative:** keep the assets on the classpath straight from
-> `src` and skip staging entirely:
-> ```sh
-> find src -name '*.java' > /tmp/sources.txt && javac --release 17 -d bin @/tmp/sources.txt
-> java -cp bin:src view.JBlackJack
-> ```
-> Either way the game runs from **any** working directory — no need to `cd` into
-> the project root.
+> 🖥️ Prefer an IDE? Import the folder into **Eclipse** as an existing Java
+> project and press *Run* on `view.JBlackJack`.
+
+### 🧹 Cleaning up
+
+Removing the build output is portable too — no shell script, just the JDK. From
+the project root, on **Windows, macOS or Linux**:
+
+```sh
+java tools/Clean.java            # remove bin/, build/, JBlackJack.jar + scratch/OS cruft
+java tools/Clean.java --dry-run  # preview what would be deleted, change nothing
+java tools/Clean.java --deep     # also remove a legacy ~/.JBlackJack from older versions
+```
 
 ---
 
 ## 🎮 Usage
 
-The game takes no command-line arguments — just launch it:
+The game takes no command-line arguments — just launch the jar:
 
 ```sh
-java -cp bin view.JBlackJack
+java -jar JBlackJack.jar
 ```
 
 ### How to play
@@ -118,10 +130,11 @@ java -cp bin view.JBlackJack
 
 ### Accounts
 
-User profiles are stored in `JBlackJack/src/accounts.txt`, seeded on first run
-from the bundled defaults. Register a new player from the **User → Sign up**
+User profiles are stored in the project's `src/accounts.txt`, resolved relative to
+the compiled classes so the game writes to the project file from any working
+directory (and never outside the project). Register a new player from the **User → Sign up**
 screen and pick an avatar; passwords must be **> 8 characters** with an
-uppercase, a lowercase, a number and a special character.
+uppercase, a lowercase, a number and a special character (and may not contain `:`).
 
 ---
 
@@ -209,8 +222,8 @@ order:
 
 ## ⚠️ Notes & limitations
 
-- **Plain-text accounts.** Passwords are stored unhashed in `~/.JBlackJack/accounts.txt` — fine for a local coursework project, not for anything real.
-- **Single, full-screen window.** `MainWindow` is undecorated and sized to the screen; the layout is tuned around the primary display resolution.
+- **Plain-text accounts.** Passwords are stored unhashed in `src/accounts.txt` — fine for a local coursework project, not for anything real.
+- **Single, full-screen window.** `MainWindow` is undecorated and sized to the screen; the table layout is proportional and centers itself, so it adapts to different display resolutions.
 - **No natural-blackjack bonus.** An opening 21 wins as a normal high score; there is no special payout or instant win.
 - **Desktop only.** Requires a graphical (non-headless) environment with audio; it's a Swing app, so there's no CLI mode.
 

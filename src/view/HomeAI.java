@@ -40,15 +40,15 @@ public class HomeAI extends JPanel{
 	 */
 	static final Color BORDER_COLOR = Color.BLACK;
 	/**
-	 * inner {@link Border} of the {@link HomeAi}.
+	 * inner {@link Border} of the {@link HomeAI}.
 	 */
 	private static final Border INNER_BORDER = BorderFactory.createLineBorder(BORDER_COLOR, MainWindow.SIZE.height/260);
 	/**
-	 * outer {@link Border}, shadow of the {@link HomeAi}.
+	 * outer {@link Border}, shadow of the {@link HomeAI}.
 	 */
 	private static final Border OUTER_BORDER = BorderFactory.createMatteBorder(0, 0, MainWindow.SIZE.height/380, MainWindow.SIZE.height/380, new Color(0, 0, 0, 130));
 	/**
-	 * {@link Border} of the {@link HomeAi}.
+	 * {@link Border} of the {@link HomeAI}.
 	 */
 	static final Border BORDER = BorderFactory.createCompoundBorder(OUTER_BORDER, INNER_BORDER);
 	/**

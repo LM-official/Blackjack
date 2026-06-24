@@ -48,13 +48,22 @@ public class Home extends JLayeredPane{
  */
     static final Font USER_FONT = MainWindow.FONT.deriveFont((float)MainWindow.SIZE.height/80); // use the window font adapting its size.
 	/**
+	 * {@link String} shown in {@link #userText} while no user is logged in.
+	 * Used everywhere as the sentinel for the "guest" (not-logged-in) state.
+	 */
+	static final String GUEST_NAME = "User";
+	/**
+	 * {@link String} id of the default guest avatar (image {@code /img/avatar/user.png}).
+	 */
+	static final String GUEST_AVATAR = "user";
+	/**
 	 * {@link JLabel} with the user text.
 	 */
 	static JLabel userText;
 	/**
 	 * {@link HomeButtonUser} opens the {@link AccountRegistered} panel.
 	 */
-	HomeButtonUser utente;
+	HomeButtonUser user;
 	
 	
 	/**
@@ -72,14 +81,14 @@ public class Home extends JLayeredPane{
 		add(logo);
 		
 		// play:
-		utente = new HomeButtonUser(nickname);
+		user = new HomeButtonUser(nickname);
 		play = new HomeButton("Play");
 		play.addActionListener(new ActionListener() { // on click.
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				add(new HomeAI(), Integer.valueOf(1)); // (high priority on screen).
 				play.setEnabled(false); // disable the button while the popup is shown.
-				utente.setEnabled(false); // disable the button while the popup is shown.
+				user.setEnabled(false); // disable the button while the popup is shown.
 			}
 		});
 		add(play);
@@ -116,20 +125,20 @@ public class Home extends JLayeredPane{
 			boxUser2.setBackground(null);
 			boxUser2.setLayout(new BoxLayout(boxUser2, BoxLayout.Y_AXIS));
 				// text:
-				userText = new JLabel("User");
+				userText = new JLabel(GUEST_NAME);
 				userText.setForeground(MainWindow.TEXT_COLOR);
 				userText.setFont(USER_FONT);
 				boxUser2.add(userText);
 				// user:
-				utente.addActionListener(new ActionListener() { // on click.
+				user.addActionListener(new ActionListener() { // on click.
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						add(new Account(), Integer.valueOf(1)); // (high priority on screen).
 						play.setEnabled(false);
-						utente.setEnabled(false); // disable the button while the popup is shown.
+						user.setEnabled(false); // disable the button while the popup is shown.
 					}
 				});
-				boxUser2.add(utente);
+				boxUser2.add(user);
 			boxUser.add(boxUser2);
 		add(boxUser);
 
@@ -137,24 +146,14 @@ public class Home extends JLayeredPane{
 	}
 	
 	/**
-	 * Loops the {@link Home} soundtrack.
+	 * Loops the {@link Home} soundtrack. The clip is loaded and started off the
+	 * EDT (large file); {@link AudioManager#loop} is idempotent, so it never
+	 * starts a second, overlapping loop.
 	 */
 	private void audio() {
-		AudioManager.getInstance().stop("/sounds/game.wav");
-		if (AudioManager.getInstance().isRunning("/sounds/home.wav")) // if the audio is already playing, do not start a new one.
-			return;
-	    Thread audioThread = new Thread(new Runnable() {
-	        @Override
-	        public void run() {
-	            do {
-	                AudioManager.getInstance().play("/sounds/home.wav");
-	                try {
-	                    Thread.sleep(276000);
-	                } catch (InterruptedException e1) {
-	                    e1.printStackTrace();
-	                }
-	            } while (true);
-	        }
+	    Thread audioThread = new Thread(() -> {
+	        AudioManager.getInstance().stop("/sounds/game.wav");
+	        AudioManager.getInstance().loop("/sounds/home.wav");
 	    });
 	    audioThread.setDaemon(true); // close the thread automatically when the application exits.
 	    audioThread.start();
