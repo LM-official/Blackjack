@@ -28,7 +28,7 @@ public class JBlackJack{
 	
 	
 	/**
- * Avvia l'applicazione.
+ * Starts the application.
  *
  * @param args The command-line arguments.
  */
@@ -67,6 +67,15 @@ public class JBlackJack{
 		window.add(new Game(controller));
 		window.revalidate(); // notify the layout manager that the structure changed.
         window.repaint(); // repaint.
+	}
+
+
+	/**
+	 * Starts a new {@link Game} (new match) with the same number of players
+	 * as the current one.
+	 */
+	public void newMatch() {
+		start(controller.getHands().size()); // dealer + player + AI players.
 	}
 	
 	

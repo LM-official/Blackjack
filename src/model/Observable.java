@@ -15,13 +15,13 @@ public interface Observable {
 	/**
  * Registers the new {@link Observer}; it will be notified on every change.
  *
- * @param observer L'{@link Observer} da registrare.
+ * @param observer The {@link Observer} to register.
  */
 	public void register(Observer observer);
 	/**
  * Removes the {@link Observer}; it will no longer be notified.
  *
- * @param observer L'{@link Observer} da rimuovere.
+ * @param observer The {@link Observer} to remove.
  */
 	public void unregister(Observer observer);
 	/**

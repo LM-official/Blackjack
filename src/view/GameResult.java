@@ -1,6 +1,7 @@
 package view;
 
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -37,11 +38,15 @@ public class GameResult extends JPanel{
 	JLabel text;
 	
 	/**
-	 * {@link GameButton} playAgain. 
+	 * {@link GameButton} newMatch.
+	 */
+	private GameButton newMatch;
+	/**
+	 * {@link GameButton} playAgain.
 	 */
 	private GameButton playAgain;
 	/**
-	 * {@link GameButton} exit. 
+	 * {@link GameButton} exit.
 	 */
 	private GameButton exit;
 	
@@ -65,16 +70,16 @@ public class GameResult extends JPanel{
         
         
         // update the account data:
-        if (!Home.userText.getText().equals("User")) { // if the user has logged in.
+        if (!Home.userText.getText().equals(Home.GUEST_NAME)) { // if the user has logged in.
         	String nickname = Home.userText.getText();
         	
  	// save the data of every row:
         	List<String> rows = new ArrayList<>();
-        	try (FileReader file = new FileReader(Account.FILE_PATH)) {
-        		Scanner scanner = new Scanner(file);
+        	try (FileReader file = new FileReader(Account.FILE_PATH);
+        	     Scanner scanner = new Scanner(file)) {
     			while(scanner.hasNextLine()) {
     				String[] data = scanner.nextLine().split(":"); // split the row on ':'.
-    				if (nickname.equals(data[0]))
+    				if (data.length >= 8 && nickname.equals(data[0])) // only update well-formed rows.
     					data = updateData(data, result);
     				rows.add(getRow(data));
     			}
@@ -97,6 +102,21 @@ public class GameResult extends JPanel{
  // buttons:
         JPanel buttons = new JPanel(new FlowLayout());
         buttons.setBackground(null);
+ 	// newMatch:
+			newMatch = new GameButton("Rematch");
+			// "New match" is wider than the default button: give it more room.
+			Dimension wide = new Dimension(MainWindow.SIZE.width/12, GameButton.SIZE.height);
+			newMatch.setPreferredSize(wide);
+			newMatch.setMinimumSize(wide);
+			newMatch.setMaximumSize(wide);
+			newMatch.addActionListener(new ActionListener() { // on click.
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JBlackJack.getInstance().newMatch(); // restart with the same number of players.
+				}
+			});
+			buttons.add(newMatch);
+
  	// playAgain:
 			playAgain = new GameButton("Home");
 			playAgain.addActionListener(new ActionListener() { // on click.
@@ -105,10 +125,10 @@ public class GameResult extends JPanel{
 					MainWindow window = (MainWindow) SwingUtilities.getWindowAncestor(GameResult.this);
 					window.getContentPane().removeAll();
 					String nickname = Home.userText.getText();
-					if (!nickname.equals("User")) // if the user has logged in.
+					if (!nickname.equals(Home.GUEST_NAME)) // if the user has logged in.
 						window.getContentPane().add(new HomeRegistered(nickname));
 					else
-						window.getContentPane().add(new Home("user"));
+						window.getContentPane().add(new Home(Home.GUEST_AVATAR));
 					window.revalidate(); // notify the layout manager that the structure changed.
 	                window.repaint(); // repaint.
 				}
@@ -144,10 +164,10 @@ public class GameResult extends JPanel{
 	 * @return The data of the calling account.
 	 */
 	private String[] updateData(String[] data, String result) {
-		data[3] = Integer.toString(Integer.valueOf(data[3])+1); // partite giocate += 1.
-		
+		data[3] = Integer.toString(Integer.valueOf(data[3])+1); // games played += 1.
+
 		if (result.equals("You won")) {
-			data[4] = Integer.toString(Integer.valueOf(data[4])+1); // partite vinte += 1.
+			data[4] = Integer.toString(Integer.valueOf(data[4])+1); // games won += 1.
 			data[6] = Integer.toString(Integer.valueOf(data[6])+new Random().nextInt((100 - 50) + 1) + 50); // xp += [50-100].
 			return nextLevel(data);
 		}
@@ -155,7 +175,7 @@ public class GameResult extends JPanel{
 			data[6] = Integer.toString(Integer.valueOf(data[6])+50); // xp += 50.
 			return nextLevel(data);
 		}
-		data[5] = Integer.toString(Integer.valueOf(data[5])+1); // partite perse += 1.
+		data[5] = Integer.toString(Integer.valueOf(data[5])+1); // games lost += 1.
 		data[6] = Integer.toString(Integer.valueOf(data[6])+20); // xp += 20.
 		return nextLevel(data);
 	}
@@ -205,6 +225,6 @@ public class GameResult extends JPanel{
 			AudioManager.getInstance().play("/sounds/won.wav");
 		else if (result.equals("You lost"))
 			AudioManager.getInstance().play("/sounds/lost.wav");
-		// "Tie": nessun suono specifico.
+		// "Tie": no specific sound.
 	}
 }

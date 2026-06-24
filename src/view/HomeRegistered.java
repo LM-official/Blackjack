@@ -24,11 +24,11 @@ public class HomeRegistered extends Home{
 	public HomeRegistered(String nickname) {
 		super(getAvatarId(nickname));
 		userText.setText(nickname);
-		utente.addActionListener(new ActionListener() { // on click.
+		user.addActionListener(new ActionListener() { // on click.
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				add(new AccountRegistered(nickname), Integer.valueOf(1)); // (high priority).
-				utente.setEnabled(false); // disable the button while the popup is shown.
+				user.setEnabled(false); // disable the button while the popup is shown.
 			}
 		});
 	}
@@ -41,8 +41,8 @@ public class HomeRegistered extends Home{
 	 * @return {@link String} The account's avatar id.
 	 */
 	private static String getAvatarId(String nickname) {
-		try (FileReader file = new FileReader(Account.FILE_PATH)) {
-			Scanner scanner = new Scanner(file);
+		try (FileReader file = new FileReader(Account.FILE_PATH);
+		     Scanner scanner = new Scanner(file)) {
 			while(scanner.hasNextLine()) {
 				String[] credentials = scanner.nextLine().split(":"); // split the row on ':'.
 				if (credentials.length >= 3 && nickname.equals(credentials[0]))

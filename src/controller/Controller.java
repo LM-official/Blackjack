@@ -59,8 +59,6 @@ public class Controller{
 		for (Hand hand : hands) {
 			hand.draw(deck);
 			hand.draw(deck);
-			//if (hand instanceof DealerHand)
-				//hand.getCards().get(1).flip(); // the dealer's second card is face down.
 		}
 		hands.get(0).getCards().get(1).flip(); // the dealer's second card is face down.
 	}
@@ -92,11 +90,7 @@ public class Controller{
 	 * @return The {@link DealerHand}.
 	 */
 	public DealerHand getDealerHand() {
-		for (Hand hand : hands) 
-			if (hand instanceof DealerHand) // it is certainly there.
-				return (DealerHand) hand;
-		
-		return null; // impossible: the dealer is always in the game.
+		return (DealerHand) hands.get(0); // the dealer is always the first hand.
 	}
 	/**
 	 * Returns the {@link PlayerHand}.
@@ -104,11 +98,7 @@ public class Controller{
 	 * @return The {@link PlayerHand}.
 	 */
 	public PlayerHand getPlayerHand() {
-		for (Hand hand : hands) 
-			if (hand instanceof PlayerHand) // it is certainly there.
-				return (PlayerHand) hand;
-		
-		return null; // impossible: the player is always in the game.
+		return (PlayerHand) hands.get(1); // the player is always the second hand.
 	}
 	/**
 	 * Returns the {@link AIHand} at the given index.
@@ -179,7 +169,7 @@ public class Controller{
 	/**
 	 * Registers the new {@link Observer}; it will be notified on every change of the {@link Hand}.
 	 *
-	 * @param observer L'{@link Observer} da registrare.
+	 * @param observer The {@link Observer} to register.
 	 * @param hand The {@link Hand} to observe.
 	 */
 	public void register(Observer observer, Hand hand) {
@@ -189,7 +179,7 @@ public class Controller{
 	/**
 	 * Removes the {@link Observer}; it will no longer be notified of the {@link Hand}'s changes.
 	 *
-	 * @param observer L'{@link Observer} da rimuovere.
+	 * @param observer The {@link Observer} to remove.
 	 * @param hand The {@link Hand} to observe.
 	 */
 	public void unregister(Observer observer, Hand hand) {
@@ -202,8 +192,7 @@ public class Controller{
 	 * @param hand The {@link Hand} to observe.
 	 */
 	public void notifyObservers(Hand hand) {
-		for (Observer observer: hand.getObservers())
-			observer.update();
+		hand.notifyObservers(); // delegate to the model's own notification logic.
 	}
 		
 		
@@ -250,15 +239,6 @@ public class Controller{
 		pause(1000);
 		runOnEDT(this::end);
 	}
-	/**
-	 * Handles the player going bust: reveals the dealer's card and ends
-	 * the game immediately (loss), without letting the dealer play.
-	 */
-	public void playerBusted() {
-		getDealerHand().getCards().get(1).flip();
-		notifyObservers(getDealerHand()); // visually reveals the dealer's face-down card.
-		end();
-	}
 
 	/**
 	 * Pauses the current thread for the given milliseconds.
@@ -276,7 +256,7 @@ public class Controller{
 	 * Runs a graphics operation on the EDT, waiting for it to complete, so that
 	 * the model state is updated before the next iteration.
 	 *
-	 * @param operation L'operation da eseguire sull'EDT.
+	 * @param operation The operation to run on the EDT.
 	 */
 	private void runOnEDT(Runnable operation) {
 		if (SwingUtilities.isEventDispatchThread()) {

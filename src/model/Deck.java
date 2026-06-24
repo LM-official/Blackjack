@@ -55,8 +55,8 @@ public class Deck {
 		return deck;
 	}
 	/**
-	 * Returns l'{@link ImageIcon} of the {@link Deck} of {@link Card}.
-	 * 
+	 * Returns the {@link ImageIcon} of the {@link Deck} of {@link Card}.
+	 *
 	 * @return The {@link ImageIcon} of the {@link Deck} of {@link Card}.
 	 */
 	public ImageIcon getIcon() {

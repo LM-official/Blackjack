@@ -34,7 +34,7 @@ public class HomeButtonUser extends JButton{
 	/**
 	 * Constructor of the {@link HomeButtonUser}.
 	 * 
-	 * @param icon The id of the icon of the bottone.
+	 * @param icon The id of the icon of the button.
 	 */
 	public HomeButtonUser(String icon) {
 		setIcon(new ImageIcon(Resources.icon("/img/avatar/"+icon+".png").getImage().getScaledInstance(USER_SIZE.width, USER_SIZE.height, Image.SCALE_SMOOTH))); // resize.

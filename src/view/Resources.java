@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 
 /**
  * Utility for loading resources (images, sounds, data files) from the classpath.
- * This way the application can be launched from any working lavoro,
+ * This way the application can be launched from any working directory,
  * without depending on relative paths like "./src/...".
  *
  * @author Mercuri Lorenzo,
@@ -25,7 +25,7 @@ public final class Resources {
 	/**
 	 * Returns the {@link URL} of a classpath resource.
 	 *
-	 * @param path The absolute path of the resource (es. "/img/logo.png").
+	 * @param path The absolute path of the resource (e.g. "/img/logo.png").
 	 * @return The resource's {@link URL}.
 	 */
 	public static URL url(String path) {
@@ -35,8 +35,8 @@ public final class Resources {
 	/**
 	 * Loads an image from the classpath.
 	 *
-	 * @param path The absolute path of the image (es. "/img/logo.png").
-	 * @return L'{@link ImageIcon} caricata.
+	 * @param path The absolute path of the image (e.g. "/img/logo.png").
+	 * @return The loaded {@link ImageIcon}.
 	 */
 	public static ImageIcon icon(String path) {
 		return new ImageIcon(url(path));
@@ -45,7 +45,7 @@ public final class Resources {
 	/**
 	 * Opens an {@link InputStream} on a classpath resource.
 	 *
-	 * @param path The absolute path of the resource (es. "/sounds/click.wav").
+	 * @param path The absolute path of the resource (e.g. "/sounds/click.wav").
 	 * @return The resource's {@link InputStream}.
 	 */
 	public static InputStream stream(String path) {

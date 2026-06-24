@@ -1,9 +1,14 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Files removed by ./cleanup.sh (and ./cleanup.sh --deep). Kept out of git.
+# Build artifacts & scratch — removable on any OS with:  java tools/Clean.java
+# (preview with:  java tools/Clean.java --dry-run). See README → "Cleaning up".
 # ─────────────────────────────────────────────────────────────────────────────
 
-# --- compiled output (cleanup --deep) -------------------------------------
+# --- compiled output ------------------------------------------------------
 bin/
+build/
+
+# --- packaged runnable jar (rebuild with the commands in README) ----------
+JBlackJack.jar
 
 # --- build / run scratch --------------------------------------------------
 sources.txt
@@ -12,17 +17,15 @@ sources.txt
 *.out
 *.err
 
-# --- test / verify scratch (cleanup.sh) -----------------------------------
+# --- test / verify scratch ------------------------------------------------
 jbj_*
 accounts.bak
 CurSize.*
 PathChk.*
 Res.*
 
-# --- macOS Finder artifacts (cleanup.sh) ----------------------------------
+# --- macOS / editor artifacts ---------------------------------------------
+.DS_Store
 .AppleDouble
 .LSOverride
 ._*
-
-# Note: cleanup --deep also wipes ~/.JBlackJack (the live accounts file outside
-# the repo) — it lives in $HOME, so it can't be covered by .gitignore.

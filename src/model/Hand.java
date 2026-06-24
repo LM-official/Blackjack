@@ -64,24 +64,23 @@ public abstract class Hand implements Observable{
 	 * Face-down {@link Card}s are not counted.
 	 */
 	private void updatePoints() {
-		int points = 0, assi = 0;
-		
+		int points = 0, aces = 0;
+
 		for (Card card : cards) {
-			if (card.isFaceUp()) {
-				if (card.getValueString().equals(Card.CardValue.ACE.getValueString())) { // if the card is an ace.
-					assi += 1;
-					points += 1; // an ace is worth at least 1.
-				}
-				else
-					points += card.getValue(); // add the card's score.
+			if (!card.isFaceUp()) // face-down cards are not counted.
+				continue;
+			if (card.isAce()) { // if the card is an ace.
+				aces++;
+				points += 1; // an ace is worth at least 1.
 			}
+			else
+				points += card.getValue(); // add the card's score.
 		}
-		
-		for (int i=0; i<assi; i++)
-			if (points <= 11) // if counting the ace as 11 stays within 21, count it as 11.
-				points += 10;
-			// otherwise the ace is worth 1 (already added above).
-		
+
+		// at most one ace can count as 11 without busting (a second 11 would always exceed 21).
+		if (aces > 0 && points <= 11)
+			points += 10;
+
 		this.points = points;
 	}
 	
@@ -128,16 +127,16 @@ public abstract class Hand implements Observable{
 	/**
  * Registers the new {@link Observer}; it will be notified on every change.
  *
- * @param observer L'{@link Observer} da registrare.
+ * @param observer The {@link Observer} to register.
  */
 	public void register(Observer observer) {
 		observers.add(observer);
 	}
-	
+
 	/**
  * Removes the {@link Observer}; it will no longer be notified.
  *
- * @param observer L'{@link Observer} da rimuovere.
+ * @param observer The {@link Observer} to remove.
  */
 	public void unregister(Observer observer) {
 		observers.remove(observer);
